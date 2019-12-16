@@ -6,7 +6,7 @@ import (
 
 // User is a data model for user, use for login, register, etc
 type User struct {
-	ID        string    `db:"id" json:"user_id"`
+	ID        int64     `db:"id" json:"user_id"`
 	Username  string    `db:"username" json:"username"`
 	Email     string    `db:"email" json:"email"`
 	Password  string    `db:"hash_password" json:"password,omitempty"`
