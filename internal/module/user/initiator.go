@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 
-	"github.com/iDevoid/stygis/pkg/model"
+	"github.com/iDevoid/stygis/internal/constants/model"
 )
 
 // Persistence initiator includes the functions from storage psql
@@ -29,14 +29,18 @@ type Repository interface {
 
 type service struct {
 	userPersistence Persistence
+	userRepository  Repository
 }
 
 // Usecase would be use to contain the business logic functions
-type Usecase interface{}
+type Usecase interface {
+	NewAccount(ctx context.Context, user *model.User) error
+}
 
-// InitUsecase is the function to initiate the business logic with services that'll be used by business logic
-func InitUsecase(persistance Persistence) Usecase {
+// InitializeDomain is the function to initiate the business logic with services that'll be used by business logic
+func InitializeDomain(persistance Persistence, repository Repository) Usecase {
 	return &service{
 		userPersistence: persistance,
+		userRepository:  repository,
 	}
 }

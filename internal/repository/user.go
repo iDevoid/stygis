@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 
-	"github.com/iDevoid/stygis/pkg/internal/user"
-	"github.com/iDevoid/stygis/pkg/model"
+	"github.com/iDevoid/stygis/internal/module/user"
+	"github.com/iDevoid/stygis/internal/constants/model"
 )
 
 type userRepo struct {
@@ -12,8 +12,8 @@ type userRepo struct {
 	persistance user.Persistence
 }
 
-// InitRepositoryUser to initiate the repository of user domain
-func InitRepositoryUser(cache user.Caching, persistance user.Persistence) user.Repository {
+// UserInit to initiate the repository of user domain
+func UserInit(cache user.Caching, persistance user.Persistence) user.Repository {
 	return &userRepo{
 		cache:       cache,
 		persistance: persistance,
