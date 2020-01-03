@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/sha256"
 	"flag"
 	"os"
 
@@ -18,11 +19,12 @@ import (
 )
 
 const (
+	// change all connection strings based on your own credentials
 	redisURL      = "127.0.0.1:6379"
 	redisPassword = ""
+	postgresURL   = "postgresql://postgres@127.0.0.1/postgres?sslmode=disable"
 
-	postgresURL = "postgresql://usut@127.0.0.1/ticket?sslmode=disable"
-	domain      = "user"
+	domain = "user"
 )
 
 var testInit bool
@@ -44,7 +46,10 @@ func main() {
 	repo := repository.UserInit(caching, database)
 
 	usecase := user.InitializeDomain(database, repo)
-	handler := rest.HandleUser(usecase)
+
+	hash := sha256.New()
+
+	handler := rest.HandleUser(usecase, hash)
 	router := routing.UserInit(handler).NewRouters()
 	servant := routers.Initialize(":9000", router, domain)
 

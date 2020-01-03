@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/iDevoid/stygis/internal/constants/model"
 	"github.com/iDevoid/stygis/internal/constants/query"
 	"github.com/iDevoid/stygis/internal/constants/state"
 	"github.com/iDevoid/stygis/internal/module/user"
-	"github.com/iDevoid/stygis/internal/constants/model"
 	"github.com/iDevoid/stygis/platform/postgres"
 	"github.com/jmoiron/sqlx"
 )
@@ -25,7 +25,7 @@ func UserInit(db *postgres.Database) user.Persistence {
 
 // Create is the persistance to save new user to db
 func (up *userPersistence) Create(ctx context.Context, user *model.User) error {
-	tx, err := up.db.Master.Begin()
+	tx, err := up.db.Master.Beginx()
 	if err != nil {
 		return err
 	}
@@ -39,7 +39,7 @@ func (up *userPersistence) Create(ctx context.Context, user *model.User) error {
 	query, args, _ := sqlx.Named(query.InsertNewUser, param)
 	query = up.db.Master.Rebind(query)
 	err = tx.QueryRowContext(ctx, query, args...).Scan(&user.ID)
-	if err != nil {
+	if err == nil {
 		err = tx.Commit()
 	}
 	return err
@@ -80,7 +80,7 @@ func (up *userPersistence) Find(ctx context.Context, email, password string) (us
 
 // ChangePassword is to for changing old hashed password with new hashed password and user data to change the current password inside database
 func (up *userPersistence) ChangePassword(ctx context.Context, newPassword string, user *model.User) error {
-	tx, err := up.db.Master.Begin()
+	tx, err := up.db.Master.Beginx()
 	if err != nil {
 		return err
 	}
@@ -95,7 +95,7 @@ func (up *userPersistence) ChangePassword(ctx context.Context, newPassword strin
 	query, args, _ := sqlx.Named(query.UpdateUserPassword, param)
 	query = up.db.Master.Rebind(query)
 	_, err = tx.ExecContext(ctx, query, args...)
-	if err != nil {
+	if err == nil {
 		err = tx.Commit()
 	}
 	return nil
@@ -103,7 +103,7 @@ func (up *userPersistence) ChangePassword(ctx context.Context, newPassword strin
 
 // Delete basically doing the soft delete for the logged in user account
 func (up *userPersistence) Delete(ctx context.Context, user *model.User) error {
-	tx, err := up.db.Master.Begin()
+	tx, err := up.db.Master.Beginx()
 	if err != nil {
 		return err
 	}
@@ -118,7 +118,7 @@ func (up *userPersistence) Delete(ctx context.Context, user *model.User) error {
 	query, args, _ := sqlx.Named(query.DeactivateUser, param)
 	query = up.db.Master.Rebind(query)
 	_, err = tx.ExecContext(ctx, query, args...)
-	if err != nil {
+	if err == nil {
 		err = tx.Commit()
 	}
 	return err

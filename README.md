@@ -12,7 +12,7 @@ stygis/
 ├── cmd                                 # Packages that provide support for a specific program that is being built
       ├── user                          # domain name to make things more orgenized
             ├── rest                    # Entry point of main application based on REST technology
-├── internal                            # Contains all application packages
+├── internal                            # Contains all application packages (all functions must have return)
       ├── constants                     # For declaring all constants variable based on it's entity, declaring with full name descripting it
             ├── model                   # model is where the declaration of structs are being written
             ├── query                   # where query is being declared for storage sql, and it's better using sqlx naming system for passing the parameters
@@ -29,6 +29,10 @@ stygis/
       ├── storage                       # this is where you put the data storing code. whether persistance like postgresql, monggodb, etc. and caching like redis, etc. 
             ├── cache                   # package where caching storing code is written based on its domain.
             ├── persistance             # like its name, this package contains storing code for SQL or noSQL db
+├── platform                            # external app for all uses (in here you can make function without return)
+      ├── postgres                      # contains functions to open database postgres connections, with mutiple servers can be added, like db master and/or slave
+      ├── redis                         # contains functions to open database redis connection, currently it uses only one connection, but this can be adjust just like the postgres connections
+      ├── routers                       # contains functions to serve the HTTP Listener using all registered URLs with the handlers
 ```
 
 ## The Flow
@@ -53,3 +57,7 @@ There is no duplication of package naming here, you can see that the there is `r
 
 ## References
 [Ashley McNamara + Brian Ketelsen. Go best practices.](https://youtu.be/MzTcsI6tn-0)
+
+## golang Hexagonal Arch Repositories
+[Gira (A Hex Example)](https://github.com/Holmes89/hex-example)
+[Kat Zień - Achieving maintainability with hexagonal architecture](https://github.com/katzien/go-structure-examples/tree/master/domain-hex)

@@ -40,7 +40,6 @@ func (cs *connectionString) Open() *redis.Client {
 	err := client.Ping().Err()
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
-			"platform":   "redis",
 			"connection": cs.connection,
 			"password":   cs.password,
 		}).Fatal(err)

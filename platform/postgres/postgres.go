@@ -11,6 +11,10 @@ type connectionString struct {
 	domain string
 }
 
+// why is this needed? because sonarqube will say there's a duplication if you write it multiple times
+var stringType = "type"
+var stringConnection = "connection"
+
 // Connections return the wrapped actions of postgres database
 type Connections interface {
 	Open() *Database
@@ -35,38 +39,46 @@ func Initialize(master, slave, domain string) Connections {
 
 // Open is creating the database postgres connections, both master and slave
 func (cs *connectionString) Open() *Database {
-	logrus.WithFields(logrus.Fields{
+	// log fieds for logrus, no need to write this multiple times
+	logFields := logrus.Fields{
 		"platform": "postgres",
 		"domain":   cs.domain,
-	}).Info("Connecting to PostgreSQL DB")
+	}
+	logMasterFields := logrus.Fields{
+		stringType:       "master",
+		stringConnection: cs.master,
+	}
+	logSlaveFields := logrus.Fields{
+		stringType:       "slave",
+		stringConnection: cs.slave,
+	}
 
-	logrus.WithFields(logrus.Fields{
-		"platform": "postgres",
-		"domain":   cs.domain,
-	}).Info("Opening Connection to Master")
+	logrus.WithFields(logFields).Info("Connecting to PostgreSQL DB")
+
+	logrus.WithFields(logFields).Info("Opening Connection to Master")
 	dbMaster, err := sqlx.Open("postgres", cs.master)
 	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"platform":   "postgres",
-			"type":       "master",
-			"connection": cs.master,
-		}).Fatal(err)
+		logrus.WithFields(logMasterFields).Fatal(err)
+		panic(err)
+	}
+	err = dbMaster.Ping()
+	if err != nil {
+		logrus.WithFields(logMasterFields).Fatal(err)
 		panic(err)
 	}
 
-	logrus.WithFields(logrus.Fields{
-		"platform": "postgres",
-		"domain":   cs.domain,
-	}).Info("Opening Connection to Slave")
+	logrus.WithFields(logFields).Info("Opening Connection to Slave")
 	dbSlave, err := sqlx.Open("postgres", cs.master)
 	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"platform":   "postgres",
-			"type":       "slave",
-			"connection": cs.slave,
-		}).Fatal(err)
+		logrus.WithFields(logSlaveFields).Fatal(err)
 		panic(err)
 	}
+	err = dbSlave.Ping()
+	if err != nil {
+		logrus.WithFields(logSlaveFields).Fatal(err)
+		panic(err)
+	}
+
 	return &Database{
 		Master: dbMaster,
 		Slave:  dbSlave,

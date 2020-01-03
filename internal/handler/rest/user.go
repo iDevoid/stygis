@@ -2,14 +2,18 @@ package rest
 
 import (
 	"errors"
+	"fmt"
+	"hash"
 	"net/http"
 
+	"github.com/iDevoid/stygis/internal/constants/model"
 	"github.com/iDevoid/stygis/internal/module/user"
 	"github.com/savsgio/atreugo/v10"
 )
 
 type userService struct {
-	Usecase user.Usecase
+	usecase user.Usecase
+	hash    hash.Hash
 }
 
 // UserHandler contains all the functions for handling http request
@@ -19,9 +23,10 @@ type UserHandler interface {
 }
 
 // HandleUser is to initialize the rest handler for domain user
-func HandleUser(usecase user.Usecase) UserHandler {
+func HandleUser(usecase user.Usecase, hash hash.Hash) UserHandler {
 	return &userService{
-		Usecase: usecase,
+		usecase: usecase,
+		hash:    hash,
 	}
 }
 
@@ -31,7 +36,7 @@ func (us *userService) Test(ctx *atreugo.RequestCtx) error {
 }
 
 // CreateNewAccount handles user registration
-func (us *userService) CreateNewAccount(ctx *atreugo.RequestCtx) error {
+func (user *userService) CreateNewAccount(ctx *atreugo.RequestCtx) error {
 	username := string(ctx.FormValue("username"))
 	email := string(ctx.FormValue("email"))
 	password := string(ctx.FormValue("password"))
@@ -41,6 +46,17 @@ func (us *userService) CreateNewAccount(ctx *atreugo.RequestCtx) error {
 		return errors.New("bad payload")
 	}
 
-	// us.Usecase.NewAccount(ctx.RequestCtx, &model.User{})
+	user.hash.Write([]byte(password))
+	password = fmt.Sprintf("%x", user.hash.Sum(nil))
+
+	err := user.usecase.NewAccount(ctx.RequestCtx, &model.User{
+		Username: username,
+		Email:    email,
+		Password: password,
+	})
+	if err != nil {
+		ctx.SetStatusCode(http.StatusInternalServerError)
+		return err
+	}
 	return nil
 }
