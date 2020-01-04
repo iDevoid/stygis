@@ -16,14 +16,14 @@ type userPersistence struct {
 	db *postgres.Database
 }
 
-// UserInit is to init the user persistance that contains data accounts
+// UserInit is to init the user persistence that contains data accounts
 func UserInit(db *postgres.Database) user.Persistence {
 	return &userPersistence{
 		db,
 	}
 }
 
-// Create is the persistance to save new user to db
+// Create is the persistence to save new user to db
 func (up *userPersistence) Create(ctx context.Context, user *model.User) error {
 	tx, err := up.db.Master.Beginx()
 	if err != nil {

@@ -9,14 +9,14 @@ import (
 
 type userRepo struct {
 	cache       user.Caching
-	persistance user.Persistence
+	persistence user.Persistence
 }
 
 // UserInit to initiate the repository of user domain
-func UserInit(cache user.Caching, persistance user.Persistence) user.Repository {
+func UserInit(cache user.Caching, persistence user.Persistence) user.Repository {
 	return &userRepo{
 		cache:       cache,
-		persistance: persistance,
+		persistence: persistence,
 	}
 }
 
@@ -25,6 +25,6 @@ func (ur *userRepo) DataProfile(ctx context.Context, userID int64) (*model.User,
 	if err == nil {
 		return user, nil
 	}
-	user, err = ur.persistance.FindByID(ctx, userID)
+	user, err = ur.persistence.FindByID(ctx, userID)
 	return user, err
 }

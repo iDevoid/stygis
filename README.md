@@ -25,10 +25,10 @@ stygis/
             ├── user                    # only sample domain, user package which handler for user business logic
                 ├── initiator.go        # this is the only file to declare interface methods from storage and repository. also where to put func init the package.
                 ....                    # name the file based on the usecase that may contains multiple acticity; example: login usecase for only one activity, profile contains edit profile and show profile
-      ├── repository                    # this may a bit weird for you, this package uses for data storing logic, it is an optional if your domain only saves data to one db, but it's different when a domain uses multiple storage, for example caching and multiple persistances
-      ├── storage                       # this is where you put the data storing code. whether persistance like postgresql, monggodb, etc. and caching like redis, etc. 
+      ├── repository                    # this may a bit weird for you, this package uses for data storing logic, it is an optional if your domain only saves data to one db, but it's different when a domain uses multiple storage, for example caching and multiple persistences
+      ├── storage                       # this is where you put the data storing code. whether persistence like postgresql, monggodb, etc. and caching like redis, etc. 
             ├── cache                   # package where caching storing code is written based on its domain.
-            ├── persistance             # like its name, this package contains storing code for SQL or noSQL db
+            ├── persistence             # like its name, this package contains storing code for SQL or noSQL db
 ├── platform                            # external app for all uses (in here you can make function without return)
       ├── postgres                      # contains functions to open database postgres connections, with mutiple servers can be added, like db master and/or slave
       ├── redis                         # contains functions to open database redis connection, currently it uses only one connection, but this can be adjust just like the postgres connections
@@ -59,5 +59,5 @@ There is no duplication of package naming here, you can see that the there is `r
 [Ashley McNamara + Brian Ketelsen. Go best practices.](https://youtu.be/MzTcsI6tn-0)
 
 ## golang Hexagonal Arch Repositories
-[Gira (A Hex Example)](https://github.com/Holmes89/hex-example)
-[Kat Zień - Achieving maintainability with hexagonal architecture](https://github.com/katzien/go-structure-examples/tree/master/domain-hex)
+1. [Gira (A Hex Example)](https://github.com/Holmes89/hex-example)
+2. [Kat Zień - Achieving maintainability with hexagonal architecture](https://github.com/katzien/go-structure-examples/tree/master/domain-hex)

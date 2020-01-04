@@ -45,7 +45,7 @@ func main() {
 	caching := cache.UserInit(redisConn)
 	repo := repository.UserInit(caching, database)
 
-	usecase := user.InitializeDomain(database, repo)
+	usecase := user.InitializeDomain(database, caching, repo)
 
 	hash := sha256.New()
 

@@ -29,6 +29,7 @@ type Repository interface {
 
 type service struct {
 	userPersistence Persistence
+	userCaching     Caching
 	userRepository  Repository
 }
 
@@ -38,9 +39,10 @@ type Usecase interface {
 }
 
 // InitializeDomain is the function to initiate the business logic with services that'll be used by business logic
-func InitializeDomain(persistance Persistence, repository Repository) Usecase {
+func InitializeDomain(persistence Persistence, caching Caching, repository Repository) Usecase {
 	return &service{
-		userPersistence: persistance,
+		userPersistence: persistence,
+		userCaching:     caching,
 		userRepository:  repository,
 	}
 }
