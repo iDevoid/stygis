@@ -3,20 +3,15 @@ package routing
 import (
 	"github.com/iDevoid/stygis/platform/routers"
 
-	"github.com/iDevoid/stygis/internal/handler/rest"
+	"github.com/iDevoid/stygis/internal/module/user"
 )
 
 type userHandlers struct {
-	handler rest.UserHandler
-}
-
-// UserRouter contains the functions that will be used for the routing domain user
-type UserRouter interface {
-	NewRouters() []*routers.Router
+	handler user.Handler
 }
 
 // UserInit is to initialize the routers for domain user
-func UserInit(handler rest.UserHandler) UserRouter {
+func UserInit(handler user.Handler) user.Router {
 	return &userHandlers{
 		handler: handler,
 	}

@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/iDevoid/stygis/internal/constants/model"
+	"github.com/iDevoid/stygis/platform/routers"
+	"github.com/savsgio/atreugo/v10"
 )
 
 // Persistence initiator includes the functions from storage psql
@@ -45,4 +47,15 @@ func InitializeDomain(persistence Persistence, caching Caching, repository Repos
 		userCaching:     caching,
 		userRepository:  repository,
 	}
+}
+
+// Handler contains all the functions for handling http request
+type Handler interface {
+	Test(ctx *atreugo.RequestCtx) error
+	CreateNewAccount(ctx *atreugo.RequestCtx) error
+}
+
+// Router contains the functions that will be used for the routing domain user
+type Router interface {
+	NewRouters() []*routers.Router
 }

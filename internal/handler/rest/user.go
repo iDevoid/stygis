@@ -16,14 +16,8 @@ type userService struct {
 	hash    hash.Hash
 }
 
-// UserHandler contains all the functions for handling http request
-type UserHandler interface {
-	Test(ctx *atreugo.RequestCtx) error
-	CreateNewAccount(ctx *atreugo.RequestCtx) error
-}
-
 // HandleUser is to initialize the rest handler for domain user
-func HandleUser(usecase user.Usecase, hash hash.Hash) UserHandler {
+func HandleUser(usecase user.Usecase, hash hash.Hash) user.Handler {
 	return &userService{
 		usecase: usecase,
 		hash:    hash,
@@ -36,7 +30,7 @@ func (us *userService) Test(ctx *atreugo.RequestCtx) error {
 }
 
 // CreateNewAccount handles user registration
-func (user *userService) CreateNewAccount(ctx *atreugo.RequestCtx) error {
+func (us *userService) CreateNewAccount(ctx *atreugo.RequestCtx) error {
 	username := string(ctx.FormValue("username"))
 	email := string(ctx.FormValue("email"))
 	password := string(ctx.FormValue("password"))
@@ -46,10 +40,10 @@ func (user *userService) CreateNewAccount(ctx *atreugo.RequestCtx) error {
 		return errors.New("bad payload")
 	}
 
-	user.hash.Write([]byte(password))
-	password = fmt.Sprintf("%x", user.hash.Sum(nil))
+	us.hash.Write([]byte(password))
+	password = fmt.Sprintf("%x", us.hash.Sum(nil))
 
-	err := user.usecase.NewAccount(ctx.RequestCtx, &model.User{
+	err := us.usecase.NewAccount(ctx.RequestCtx, &model.User{
 		Username: username,
 		Email:    email,
 		Password: password,
