@@ -5,14 +5,14 @@ import (
 
 	"github.com/iDevoid/stygis/internal/constants/model"
 	"github.com/iDevoid/stygis/platform/routers"
-	"github.com/savsgio/atreugo/v10"
+	atreugo "github.com/savsgio/atreugo/v10"
 )
 
 // Persistence initiator includes the functions from storage psql
 type Persistence interface {
 	Create(ctx context.Context, user *model.User) error
-	FindByID(ctx context.Context, userID int64) (user *model.User, err error)
-	Find(ctx context.Context, email, password string) (user *model.User, err error)
+	FindByID(ctx context.Context, userID int64) (*model.User, error)
+	Find(ctx context.Context, email, password string) (*model.User, error)
 	ChangePassword(ctx context.Context, newPassword string, user *model.User) error
 	Delete(ctx context.Context, user *model.User) error
 }

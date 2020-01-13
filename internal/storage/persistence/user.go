@@ -47,23 +47,25 @@ func (up *userPersistence) Create(ctx context.Context, user *model.User) error {
 
 // FindByID is to find user inside db using only userID
 // this returns the pointer of the selected data if it doesn't error
-func (up *userPersistence) FindByID(ctx context.Context, userID int64) (user *model.User, err error) {
+func (up *userPersistence) FindByID(ctx context.Context, userID int64) (*model.User, error) {
 	param := map[string]interface{}{
 		"user_id": userID,
 		"status":  state.ActiveAccount,
 	}
 	query, args, _ := sqlx.Named(query.SelectUserByID, param)
 	query = up.db.Slave.Rebind(query)
-	err = up.db.Slave.SelectContext(ctx, &user, query, args...)
+
+	user := new(model.User)
+	err := up.db.Slave.GetContext(ctx, user, query, args...)
 	if err == sql.ErrNoRows {
 		err = nil
 	}
-	return
+	return user, err
 }
 
 // Find is the function of user storage that select all data, using email and hashed password
 // this function is being used for login
-func (up *userPersistence) Find(ctx context.Context, email, password string) (user *model.User, err error) {
+func (up *userPersistence) Find(ctx context.Context, email, password string) (*model.User, error) {
 	param := map[string]interface{}{
 		"email":    email,
 		"password": password,
@@ -71,11 +73,13 @@ func (up *userPersistence) Find(ctx context.Context, email, password string) (us
 	}
 	query, args, _ := sqlx.Named(query.SelectUserByEmail, param)
 	query = up.db.Slave.Rebind(query)
-	err = up.db.Slave.SelectContext(ctx, &user, query, args...)
+
+	user := new(model.User)
+	err := up.db.Slave.GetContext(ctx, user, query, args...)
 	if err == sql.ErrNoRows {
 		err = nil
 	}
-	return
+	return user, err
 }
 
 // ChangePassword is to for changing old hashed password with new hashed password and user data to change the current password inside database

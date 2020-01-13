@@ -43,7 +43,6 @@ const (
 		SELECT 
 			id, 
 			email, 
-			hash_password, 
 			username, 
 			created_at, 
 			last_login, 
