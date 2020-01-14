@@ -10,8 +10,8 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/iDevoid/stygis/internal/constants/model"
 	"github.com/iDevoid/stygis/internal/module/user"
+	"github.com/iDevoid/stygis/mocks"
 	"github.com/iDevoid/stygis/platform/postgres"
-	"github.com/jmoiron/sqlx"
 )
 
 func TestUserInit(t *testing.T) {
@@ -43,10 +43,7 @@ func TestUserInit(t *testing.T) {
 }
 
 func Test_userPersistence_Create(t *testing.T) {
-	db, mocked, err := sqlmock.New()
-	if err != nil {
-		t.Skip()
-	}
+	sqlxDB, mocked, db := mocks.PSQLMock()
 	defer db.Close()
 
 	type args struct {
@@ -66,7 +63,6 @@ func Test_userPersistence_Create(t *testing.T) {
 			},
 			wantErr: true,
 			initMock: func() *postgres.Database {
-				sqlxDB := sqlx.NewDb(db, "sqlmock")
 				return &postgres.Database{
 					Master: sqlxDB,
 				}
@@ -83,7 +79,6 @@ func Test_userPersistence_Create(t *testing.T) {
 				},
 			},
 			initMock: func() *postgres.Database {
-				sqlxDB := sqlx.NewDb(db, "sqlmock")
 				mocked.ExpectBegin()
 				mocked.ExpectQuery(`
 					INSERT INTO account \(
@@ -128,10 +123,7 @@ func Test_userPersistence_Create(t *testing.T) {
 }
 
 func Test_userPersistence_FindByID(t *testing.T) {
-	db, mocked, err := sqlmock.New()
-	if err != nil {
-		t.Skip()
-	}
+	sqlxDB, mocked, db := mocks.PSQLMock()
 	defer db.Close()
 
 	type args struct {
@@ -153,7 +145,6 @@ func Test_userPersistence_FindByID(t *testing.T) {
 			},
 			wantUser: &model.User{},
 			initMock: func() *postgres.Database {
-				sqlxDB := sqlx.NewDb(db, "sqlmock")
 				mocked.ExpectQuery(`
 					SELECT 
 						id, 
@@ -185,7 +176,6 @@ func Test_userPersistence_FindByID(t *testing.T) {
 				Status:    1,
 			},
 			initMock: func() *postgres.Database {
-				sqlxDB := sqlx.NewDb(db, "sqlmock")
 				mocked.ExpectQuery(`
 					SELECT 
 						id, 
@@ -233,10 +223,7 @@ func Test_userPersistence_FindByID(t *testing.T) {
 }
 
 func Test_userPersistence_Find(t *testing.T) {
-	db, mocked, err := sqlmock.New()
-	if err != nil {
-		t.Skip()
-	}
+	sqlxDB, mocked, db := mocks.PSQLMock()
 	defer db.Close()
 
 	type args struct {
@@ -260,7 +247,6 @@ func Test_userPersistence_Find(t *testing.T) {
 			},
 			want: &model.User{},
 			initMock: func() *postgres.Database {
-				sqlxDB := sqlx.NewDb(db, "sqlmock")
 				mocked.ExpectQuery(`
 					SELECT 
 						id, 
@@ -298,7 +284,6 @@ func Test_userPersistence_Find(t *testing.T) {
 				Status:    1,
 			},
 			initMock: func() *postgres.Database {
-				sqlxDB := sqlx.NewDb(db, "sqlmock")
 				mocked.ExpectQuery(`
 					SELECT 
 						id, 
@@ -353,10 +338,7 @@ func Test_userPersistence_Find(t *testing.T) {
 }
 
 func Test_userPersistence_ChangePassword(t *testing.T) {
-	db, mocked, err := sqlmock.New()
-	if err != nil {
-		t.Skip()
-	}
+	sqlxDB, mocked, db := mocks.PSQLMock()
 	defer db.Close()
 
 	type args struct {
@@ -377,7 +359,6 @@ func Test_userPersistence_ChangePassword(t *testing.T) {
 			},
 			wantErr: true,
 			initMock: func() *postgres.Database {
-				sqlxDB := sqlx.NewDb(db, "sqlmock")
 				return &postgres.Database{
 					Master: sqlxDB,
 				}
@@ -395,7 +376,6 @@ func Test_userPersistence_ChangePassword(t *testing.T) {
 				},
 			},
 			initMock: func() *postgres.Database {
-				sqlxDB := sqlx.NewDb(db, "sqlmock")
 				mocked.ExpectBegin()
 				mocked.ExpectExec(`
 					UPDATE 
@@ -429,10 +409,7 @@ func Test_userPersistence_ChangePassword(t *testing.T) {
 }
 
 func Test_userPersistence_Delete(t *testing.T) {
-	db, mocked, err := sqlmock.New()
-	if err != nil {
-		t.Skip()
-	}
+	sqlxDB, mocked, db := mocks.PSQLMock()
 	defer db.Close()
 
 	type args struct {
@@ -452,7 +429,6 @@ func Test_userPersistence_Delete(t *testing.T) {
 			},
 			wantErr: true,
 			initMock: func() *postgres.Database {
-				sqlxDB := sqlx.NewDb(db, "sqlmock")
 				return &postgres.Database{
 					Master: sqlxDB,
 				}
@@ -469,7 +445,6 @@ func Test_userPersistence_Delete(t *testing.T) {
 				},
 			},
 			initMock: func() *postgres.Database {
-				sqlxDB := sqlx.NewDb(db, "sqlmock")
 				mocked.ExpectBegin()
 				mocked.ExpectExec(`
 					UPDATE 

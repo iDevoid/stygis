@@ -49,6 +49,16 @@ constants (optional) -> glue (optional) -> handler -> module -> repository and/o
 6. storage : write the template of CRUD operation whatever the technology is
 ```
 
+## How TO Mock
+Before you start to generate the mocks for any domain. Make sure that all interfaces are in initiator.go under your domain package.
+
+1. inside every initiator.go, put `//go:generate mockgen -destination=../../../mocks/(file name destination).go -package=mocks -source=initiator.go` under your `package yourdomain` line or under the first line
+example : `//go:generate mockgen -destination=../../../mocks/user_mock.go -package=mocks -source=initiator.go`
+
+2. run `go generate ./...` on your terminal (your directory position is the root of your project)
+this will runs the command you put inside the initator.go
+the `-destination=../../../mocks` is to set the generated files to be all under mocks folder in your root project, so all mocks will be centralized under mocks package
+
 ## Notes
 
 Be aware that this may not be the better structure for your application, but i'm hopping to write into more general structure and stay simple

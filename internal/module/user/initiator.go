@@ -1,5 +1,7 @@
 package user
 
+//go:generate mockgen -destination=../../../mocks/user_mock.go -package=mocks -source=initiator.go
+
 import (
 	"context"
 
@@ -9,6 +11,7 @@ import (
 )
 
 // Persistence initiator includes the functions from storage psql
+
 type Persistence interface {
 	Create(ctx context.Context, user *model.User) error
 	FindByID(ctx context.Context, userID int64) (*model.User, error)
