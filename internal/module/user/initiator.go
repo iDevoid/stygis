@@ -40,7 +40,9 @@ type service struct {
 
 // Usecase would be use to contain the business logic functions
 type Usecase interface {
-	NewAccount(ctx context.Context, user *model.User) error
+	Login(ctx context.Context, email, password string) (int64, error)
+	Profile(ctx context.Context, userID int64) (*model.User, error)
+	Register(ctx context.Context, user *model.User) error
 }
 
 // InitializeDomain is the function to initiate the business logic with services that'll be used by business logic
@@ -56,6 +58,8 @@ func InitializeDomain(persistence Persistence, caching Caching, repository Repos
 type Handler interface {
 	Test(ctx *atreugo.RequestCtx) error
 	CreateNewAccount(ctx *atreugo.RequestCtx) error
+	SignIn(ctx *atreugo.RequestCtx) error
+	ShowProfile(ctx *atreugo.RequestCtx) error
 }
 
 // Router contains the functions that will be used for the routing domain user

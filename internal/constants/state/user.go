@@ -1,9 +1,9 @@
 package state
 
 const (
-	// InactiveAccount is to assign the user account's status to be inactive with status 0
-	InactiveAccount = 0
+	// UserInactiveAccount is to assign the user account's status to be inactive with status 0
+	UserInactiveAccount = 0
 
-	//ActiveAccount the status for active user account
-	ActiveAccount = 1
+	// UserActiveAccount the status for active user account
+	UserActiveAccount = 1
 )

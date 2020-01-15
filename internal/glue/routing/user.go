@@ -2,6 +2,7 @@ package routing
 
 import (
 	"github.com/iDevoid/stygis/platform/routers"
+	"net/http"
 
 	"github.com/iDevoid/stygis/internal/module/user"
 )
@@ -21,15 +22,25 @@ func UserInit(handler user.Handler) user.Router {
 func (uh *userHandlers) NewRouters() []*routers.Router {
 	return []*routers.Router{
 		&routers.Router{
-			Method:  "GET",
+			Method:  http.MethodGet,
 			URL:     "/test",
 			Handler: uh.handler.Test,
 		},
+		&routers.Router{
+			Method:  http.MethodGet,
+			URL:     "/account/profile",
+			Handler: uh.handler.ShowProfile,
+		},
 
 		&routers.Router{
-			Method:  "POST",
-			URL:     "/account/new",
+			Method:  http.MethodPost,
+			URL:     "/account/register",
 			Handler: uh.handler.CreateNewAccount,
+		},
+		&routers.Router{
+			Method:  http.MethodPost,
+			URL:     "/account/login",
+			Handler: uh.handler.SignIn,
 		},
 	}
 }

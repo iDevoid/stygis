@@ -6,12 +6,11 @@ package mocks
 
 import (
 	context "context"
-	reflect "reflect"
-
 	gomock "github.com/golang/mock/gomock"
 	model "github.com/iDevoid/stygis/internal/constants/model"
 	routers "github.com/iDevoid/stygis/platform/routers"
 	v10 "github.com/savsgio/atreugo/v10"
+	reflect "reflect"
 )
 
 // MockPersistence is a mock of Persistence interface
@@ -236,18 +235,48 @@ func (m *MockUsecase) EXPECT() *MockUsecaseMockRecorder {
 	return m.recorder
 }
 
-// NewAccount mocks base method
-func (m *MockUsecase) NewAccount(ctx context.Context, user *model.User) error {
+// Login mocks base method
+func (m *MockUsecase) Login(ctx context.Context, email, password string) (int64, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "NewAccount", ctx, user)
+	ret := m.ctrl.Call(m, "Login", ctx, email, password)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Login indicates an expected call of Login
+func (mr *MockUsecaseMockRecorder) Login(ctx, email, password interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Login", reflect.TypeOf((*MockUsecase)(nil).Login), ctx, email, password)
+}
+
+// Profile mocks base method
+func (m *MockUsecase) Profile(ctx context.Context, userID int64) (*model.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Profile", ctx, userID)
+	ret0, _ := ret[0].(*model.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Profile indicates an expected call of Profile
+func (mr *MockUsecaseMockRecorder) Profile(ctx, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Profile", reflect.TypeOf((*MockUsecase)(nil).Profile), ctx, userID)
+}
+
+// Register mocks base method
+func (m *MockUsecase) Register(ctx context.Context, user *model.User) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Register", ctx, user)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// NewAccount indicates an expected call of NewAccount
-func (mr *MockUsecaseMockRecorder) NewAccount(ctx, user interface{}) *gomock.Call {
+// Register indicates an expected call of Register
+func (mr *MockUsecaseMockRecorder) Register(ctx, user interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewAccount", reflect.TypeOf((*MockUsecase)(nil).NewAccount), ctx, user)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Register", reflect.TypeOf((*MockUsecase)(nil).Register), ctx, user)
 }
 
 // MockHandler is a mock of Handler interface
@@ -299,6 +328,34 @@ func (m *MockHandler) CreateNewAccount(ctx *v10.RequestCtx) error {
 func (mr *MockHandlerMockRecorder) CreateNewAccount(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateNewAccount", reflect.TypeOf((*MockHandler)(nil).CreateNewAccount), ctx)
+}
+
+// SignIn mocks base method
+func (m *MockHandler) SignIn(ctx *v10.RequestCtx) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SignIn", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SignIn indicates an expected call of SignIn
+func (mr *MockHandlerMockRecorder) SignIn(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignIn", reflect.TypeOf((*MockHandler)(nil).SignIn), ctx)
+}
+
+// ShowProfile mocks base method
+func (m *MockHandler) ShowProfile(ctx *v10.RequestCtx) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ShowProfile", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ShowProfile indicates an expected call of ShowProfile
+func (mr *MockHandlerMockRecorder) ShowProfile(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ShowProfile", reflect.TypeOf((*MockHandler)(nil).ShowProfile), ctx)
 }
 
 // MockRouter is a mock of Router interface

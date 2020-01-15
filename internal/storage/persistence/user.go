@@ -34,7 +34,7 @@ func (up *userPersistence) Create(ctx context.Context, user *model.User) error {
 		"username": user.Username,
 		"email":    user.Email,
 		"password": user.Password,
-		"status":   state.ActiveAccount,
+		"status":   state.UserActiveAccount,
 	}
 	query, args, _ := sqlx.Named(query.InsertNewUser, param)
 	query = up.db.Master.Rebind(query)
@@ -50,7 +50,7 @@ func (up *userPersistence) Create(ctx context.Context, user *model.User) error {
 func (up *userPersistence) FindByID(ctx context.Context, userID int64) (*model.User, error) {
 	param := map[string]interface{}{
 		"user_id": userID,
-		"status":  state.ActiveAccount,
+		"status":  state.UserActiveAccount,
 	}
 	query, args, _ := sqlx.Named(query.SelectUserByID, param)
 	query = up.db.Slave.Rebind(query)
@@ -69,7 +69,7 @@ func (up *userPersistence) Find(ctx context.Context, email, password string) (*m
 	param := map[string]interface{}{
 		"email":    email,
 		"password": password,
-		"status":   state.ActiveAccount,
+		"status":   state.UserActiveAccount,
 	}
 	query, args, _ := sqlx.Named(query.SelectUserByEmail, param)
 	query = up.db.Slave.Rebind(query)
@@ -94,7 +94,7 @@ func (up *userPersistence) ChangePassword(ctx context.Context, newPassword strin
 		"user_id":      user.ID,
 		"email":        user.Email,
 		"old_password": user.Password,
-		"status":       state.ActiveAccount,
+		"status":       state.UserActiveAccount,
 	}
 	query, args, _ := sqlx.Named(query.UpdateUserPassword, param)
 	query = up.db.Master.Rebind(query)
@@ -116,8 +116,8 @@ func (up *userPersistence) Delete(ctx context.Context, user *model.User) error {
 		"user_id":         user.ID,
 		"email":           user.Email,
 		"password":        user.Password,
-		"active_status":   state.ActiveAccount,
-		"inactive_status": state.InactiveAccount,
+		"active_status":   state.UserActiveAccount,
+		"inactive_status": state.UserInactiveAccount,
 	}
 	query, args, _ := sqlx.Named(query.DeactivateUser, param)
 	query = up.db.Master.Rebind(query)
