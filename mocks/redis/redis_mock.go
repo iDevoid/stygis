@@ -1,12 +1,15 @@
-package mocks
+// Code generated manually. DO NOT EDIT.
+
+// Package mock_redis is a generated GoMock package.
+package mock_redis
 
 import (
 	"github.com/alicebob/miniredis"
 	"github.com/go-redis/redis"
 )
 
-// RedisMock mocks redis for unit test
-func RedisMock() (*redis.Client, *miniredis.Miniredis) {
+// Connection mocks redis for unit test
+func Connection() (*redis.Client, *miniredis.Miniredis) {
 	miniredis, err := miniredis.Run()
 	if err != nil {
 		panic(err)

@@ -17,9 +17,10 @@ func (s *service) Register(ctx context.Context, user *model.User) error {
 		"usecase": "Register",
 	})
 
-	err := s.userPersistence.Create(ctx, user)
+	user, err := s.userPersistence.Create(ctx, user)
 	if err != nil {
 		log.WithField(state.LogType, "persistence").Errorln(err)
+		return err
 	}
 
 	// this saving to the cache is a business logic
@@ -30,5 +31,6 @@ func (s *service) Register(ctx context.Context, user *model.User) error {
 	if err != nil {
 		log.WithField(state.LogType, "caching").Errorln(err)
 	}
-	return err
+	// there's no need for user to know if the caching is failed
+	return nil
 }

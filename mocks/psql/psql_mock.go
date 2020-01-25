@@ -1,4 +1,7 @@
-package mocks
+// Code generated manually. DO NOT EDIT.
+
+// Package mock_sql is a generated GoMock package.
+package mock_psql
 
 import (
 	"database/sql"
@@ -7,8 +10,8 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// PSQLMock returns the mocks of sqlx DB connection
-func PSQLMock() (*sqlx.DB, sqlmock.Sqlmock, *sql.DB) {
+// Connection returns the mocks of sqlx DB connection
+func Connection() (*sqlx.DB, sqlmock.Sqlmock, *sql.DB) {
 	db, mocked, err := sqlmock.New()
 	if err != nil {
 		panic(err)

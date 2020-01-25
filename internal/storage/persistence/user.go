@@ -24,10 +24,10 @@ func UserInit(db *postgres.Database) user.Persistence {
 }
 
 // Create is the persistence to save new user to db
-func (up *userPersistence) Create(ctx context.Context, user *model.User) error {
+func (up *userPersistence) Create(ctx context.Context, user *model.User) (*model.User, error) {
 	tx, err := up.db.Master.Beginx()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer tx.Rollback()
 	param := map[string]interface{}{
@@ -42,7 +42,7 @@ func (up *userPersistence) Create(ctx context.Context, user *model.User) error {
 	if err == nil {
 		err = tx.Commit()
 	}
-	return err
+	return user, err
 }
 
 // FindByID is to find user inside db using only userID

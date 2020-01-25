@@ -9,7 +9,7 @@ import (
 	"github.com/go-redis/redis"
 	"github.com/iDevoid/stygis/internal/constants/model"
 	"github.com/iDevoid/stygis/internal/module/user"
-	"github.com/iDevoid/stygis/mocks"
+	mock_redis "github.com/iDevoid/stygis/mocks/redis"
 )
 
 func TestUserInit(t *testing.T) {
@@ -41,7 +41,7 @@ func TestUserInit(t *testing.T) {
 }
 
 func Test_userCache_Save(t *testing.T) {
-	client, miniredis := mocks.RedisMock()
+	client, miniredis := mock_redis.Connection()
 
 	type args struct {
 		ctx  context.Context
@@ -106,7 +106,7 @@ func Test_userCache_Save(t *testing.T) {
 }
 
 func Test_userCache_Get(t *testing.T) {
-	client, miniredis := mocks.RedisMock()
+	client, miniredis := mock_redis.Connection()
 
 	type args struct {
 		ctx    context.Context
@@ -168,7 +168,7 @@ func Test_userCache_Get(t *testing.T) {
 }
 
 func Test_userCache_Delete(t *testing.T) {
-	client, miniredis := mocks.RedisMock()
+	client, miniredis := mock_redis.Connection()
 
 	type args struct {
 		ctx    context.Context

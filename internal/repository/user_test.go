@@ -10,7 +10,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/iDevoid/stygis/internal/constants/model"
 	"github.com/iDevoid/stygis/internal/module/user"
-	"github.com/iDevoid/stygis/mocks"
+	mock_user "github.com/iDevoid/stygis/mocks/user"
 )
 
 func TestUserInit(t *testing.T) {
@@ -45,6 +45,8 @@ func TestUserInit(t *testing.T) {
 }
 
 func Test_userRepo_DataProfile(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 	type args struct {
 		ctx    context.Context
 		userID int64
@@ -71,8 +73,7 @@ func Test_userRepo_DataProfile(t *testing.T) {
 				Status:    1,
 			},
 			initMock: func() (user.Caching, user.Persistence) {
-				ctrl := gomock.NewController(t)
-				caching := mocks.NewMockCaching(ctrl)
+				caching := mock_user.NewMockCaching(ctrl)
 				caching.EXPECT().Get(gomock.Any(), int64(1)).Return(
 					&model.User{
 						ID:        1,
@@ -95,10 +96,9 @@ func Test_userRepo_DataProfile(t *testing.T) {
 			},
 			wantErr: true,
 			initMock: func() (user.Caching, user.Persistence) {
-				ctrl := gomock.NewController(t)
-				caching := mocks.NewMockCaching(ctrl)
+				caching := mock_user.NewMockCaching(ctrl)
 				caching.EXPECT().Get(gomock.Any(), int64(1)).Return(nil, errors.New("ERROR"))
-				db := mocks.NewMockPersistence(ctrl)
+				db := mock_user.NewMockPersistence(ctrl)
 				db.EXPECT().FindByID(gomock.Any(), int64(1)).Return(nil, errors.New("ERROR"))
 				return caching, db
 			},
@@ -118,10 +118,9 @@ func Test_userRepo_DataProfile(t *testing.T) {
 				Status:    1,
 			},
 			initMock: func() (user.Caching, user.Persistence) {
-				ctrl := gomock.NewController(t)
-				caching := mocks.NewMockCaching(ctrl)
+				caching := mock_user.NewMockCaching(ctrl)
 				caching.EXPECT().Get(gomock.Any(), int64(1)).Return(nil, errors.New("ERROR"))
-				db := mocks.NewMockPersistence(ctrl)
+				db := mock_user.NewMockPersistence(ctrl)
 				db.EXPECT().FindByID(gomock.Any(), int64(1)).Return(
 					&model.User{
 						ID:        1,
