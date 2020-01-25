@@ -56,11 +56,11 @@ constants (optional) -> glue (optional) -> handler -> module -> repository and/o
 ## How TO Mock
 Before you start to generate the mocks for any domain. Make sure that all interfaces are in initiator.go under your domain package.
 
-1. inside every initiator.go, put `//go:generate mockgen -destination=../../../mocks/(source)/(file name destination).go -package=mocks -source=initiator.go` under your `package yourdomain` line or under the first line
-example : `//go:generate mockgen -destination=../../../mocks/user/user_mock.go -package=mocks -source=initiator.go`
+1. inside every initiator.go, put `//go:generate mockgen -destination=../../../mocks/(source)/(file name destination).go -source=initiator.go` under your `package yourdomain` line or under the first line
+example : `//go:generate mockgen -destination=../../../mocks/user/user_mock.go -source=initiator.go`
 
 2. run `go generate ./...` on your terminal (your directory position is the root of your project)
-this will runs the command you put inside the initator.go
+this will runs the command you put inside the initiator.go
 the `-destination=../../../mocks/(source)` is to set the generated files to be all under mocks folder in your root project, so all mocks will be centralized under mocks package
 
 How To:
@@ -68,7 +68,7 @@ How To:
 2. to call the mock, write the package name (in file). for example: `mock_user.NewMockCaching(ctrl)`
 at least on VSCODE it automatically generate import `mock_user "github.com/stygis/mocks/user`
 why it must be `mock_(source)`. because this is not a package of something to implement on the app. you cannot call the mock just using `user.NewMockCaching(ctrl)` or `mock.NewMockCaching(ctrl)`. this is because unit test should be written manually, and the programmer who's writing it understands that unit test is important as the main code. 
-also in technical reason, if we put the mock inside one package `mocks` as I did before. the other domain cannot make its mock because the same name of interfaces. this has a good side because you don't get many mocks function if the mocks are centralized inside one package, and the code and structure stay clean and orgenized.
+also in technical reason, if we put the mock inside one package `mocks` as I did before. the other domain cannot make its mock because the same name of interfaces. this has a good side because you don't get many mocks function if the mocks are centralized inside one package, and the code and structure stay clean and organized.
 
 ## Notes
 
