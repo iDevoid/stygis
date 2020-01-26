@@ -5,6 +5,7 @@ import (
 	"errors"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/golang/mock/gomock"
 	"github.com/iDevoid/stygis/internal/constants/model"
@@ -45,18 +46,22 @@ func Test_service_Profile(t *testing.T) {
 				userID: 1,
 			},
 			want: &model.User{
-				ID:       1,
-				Username: "clyf",
-				Email:    "clyf@email.com",
-				Password: "hashedpassword",
+				ID:        1,
+				Username:  "clyf",
+				Email:     "clyf@email.com",
+				CreatedAt: time.Date(2020, time.February, 20, 20, 20, 20, 20, time.UTC),
+				LastLogin: time.Date(2020, time.February, 20, 20, 20, 20, 20, time.UTC),
+				Status:    1,
 			},
 			initMock: func() Repository {
 				mocked := mock_user.NewMockRepository(ctrl)
 				mocked.EXPECT().DataProfile(gomock.Any(), int64(1)).Return(&model.User{
-					ID:       1,
-					Username: "clyf",
-					Email:    "clyf@email.com",
-					Password: "hashedpassword",
+					ID:        1,
+					Username:  "clyf",
+					Email:     "clyf@email.com",
+					CreatedAt: time.Date(2020, time.February, 20, 20, 20, 20, 20, time.UTC),
+					LastLogin: time.Date(2020, time.February, 20, 20, 20, 20, 20, time.UTC),
+					Status:    1,
 				}, nil)
 				return mocked
 			},

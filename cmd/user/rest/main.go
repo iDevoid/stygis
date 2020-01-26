@@ -22,7 +22,8 @@ const (
 	// change all connection strings based on your own credentials
 	redisURL      = "127.0.0.1:6379"
 	redisPassword = ""
-	postgresURL   = "postgresql://postgres@127.0.0.1/postgres?sslmode=disable"
+	// postgresURL   = "postgresql://postgres@127.0.0.1/postgres?sslmode=disable"
+	postgresURL = "postgresql://postgres:tokopedia789@127.0.0.1/usut?sslmode=disable"
 
 	domain = "user"
 )
@@ -50,7 +51,7 @@ func main() {
 	hash := sha256.New()
 
 	handler := rest.HandleUser(usecase, hash)
-	router := routing.UserInit(handler).NewRouters()
+	router := routing.UserInit(handler).Routers()
 	servant := routers.Initialize(":9000", router, domain)
 
 	if testInit {

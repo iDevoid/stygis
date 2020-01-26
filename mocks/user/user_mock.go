@@ -359,39 +359,39 @@ func (mr *MockHandlerMockRecorder) ShowProfile(ctx interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ShowProfile", reflect.TypeOf((*MockHandler)(nil).ShowProfile), ctx)
 }
 
-// MockRouter is a mock of Router interface
-type MockRouter struct {
+// MockRoute is a mock of Route interface
+type MockRoute struct {
 	ctrl     *gomock.Controller
-	recorder *MockRouterMockRecorder
+	recorder *MockRouteMockRecorder
 }
 
-// MockRouterMockRecorder is the mock recorder for MockRouter
-type MockRouterMockRecorder struct {
-	mock *MockRouter
+// MockRouteMockRecorder is the mock recorder for MockRoute
+type MockRouteMockRecorder struct {
+	mock *MockRoute
 }
 
-// NewMockRouter creates a new mock instance
-func NewMockRouter(ctrl *gomock.Controller) *MockRouter {
-	mock := &MockRouter{ctrl: ctrl}
-	mock.recorder = &MockRouterMockRecorder{mock}
+// NewMockRoute creates a new mock instance
+func NewMockRoute(ctrl *gomock.Controller) *MockRoute {
+	mock := &MockRoute{ctrl: ctrl}
+	mock.recorder = &MockRouteMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use
-func (m *MockRouter) EXPECT() *MockRouterMockRecorder {
+func (m *MockRoute) EXPECT() *MockRouteMockRecorder {
 	return m.recorder
 }
 
-// NewRouters mocks base method
-func (m *MockRouter) NewRouters() []*routers.Router {
+// Routers mocks base method
+func (m *MockRoute) Routers() []*routers.Router {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "NewRouters")
+	ret := m.ctrl.Call(m, "Routers")
 	ret0, _ := ret[0].([]*routers.Router)
 	return ret0
 }
 
-// NewRouters indicates an expected call of NewRouters
-func (mr *MockRouterMockRecorder) NewRouters() *gomock.Call {
+// Routers indicates an expected call of Routers
+func (mr *MockRouteMockRecorder) Routers() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewRouters", reflect.TypeOf((*MockRouter)(nil).NewRouters))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Routers", reflect.TypeOf((*MockRoute)(nil).Routers))
 }

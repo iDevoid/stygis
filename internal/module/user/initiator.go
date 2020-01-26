@@ -61,7 +61,7 @@ type Handler interface {
 	ShowProfile(ctx *atreugo.RequestCtx) error
 }
 
-// Router contains the functions that will be used for the routing domain user
-type Router interface {
-	NewRouters() []*routers.Router
+// Route contains the functions that will be used for the routing domain user
+type Route interface {
+	Routers() []*routers.Router
 }

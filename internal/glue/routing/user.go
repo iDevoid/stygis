@@ -12,14 +12,14 @@ type userHandlers struct {
 }
 
 // UserInit is to initialize the routers for domain user
-func UserInit(handler user.Handler) user.Router {
+func UserInit(handler user.Handler) user.Route {
 	return &userHandlers{
 		handler: handler,
 	}
 }
 
-// NewRouters returns the data router for domain user that will serve the rest API
-func (uh *userHandlers) NewRouters() []*routers.Router {
+// UserRouters returns the data router for domain user that will serve the rest API
+func (uh *userHandlers) Routers() []*routers.Router {
 	return []*routers.Router{
 		&routers.Router{
 			Method:  http.MethodGet,

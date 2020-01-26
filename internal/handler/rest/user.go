@@ -29,7 +29,7 @@ func HandleUser(usecase user.Usecase, hash hash.Hash) user.Handler {
 
 // Test is the test handler function
 func (us *userService) Test(ctx *atreugo.RequestCtx) error {
-	return ctx.TextResponse("Hello World")
+	return ctx.TextResponse("Hello World!")
 }
 
 // CreateNewAccount handles user registration
@@ -73,6 +73,7 @@ func (us *userService) SignIn(ctx *atreugo.RequestCtx) error {
 	userID, err := us.usecase.Login(ctx, email, password)
 	if err != nil {
 		ctx.SetStatusCode(http.StatusInternalServerError)
+		return err
 	}
 	authCookie := fasthttp.Cookie{}
 	authCookie.SetKey(state.HandlerUserKeyCookie)
@@ -80,8 +81,8 @@ func (us *userService) SignIn(ctx *atreugo.RequestCtx) error {
 	authCookie.SetValue(strconv.FormatInt(userID, 10))
 	authCookie.SetMaxAge(60 * 60 * 24)
 	authCookie.SetPath("/")
-	ctx.Response.Header.Cookie(&authCookie)
-	return err
+	ctx.Response.Header.SetCookie(&authCookie)
+	return nil
 }
 
 // ShowProfile handlers the request to show the user profile
