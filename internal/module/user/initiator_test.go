@@ -3,13 +3,18 @@ package user
 import (
 	"reflect"
 	"testing"
+
+	"github.com/iDevoid/cptx"
+	"github.com/iDevoid/stygis/internal/repository"
+	"github.com/iDevoid/stygis/internal/storage/persistence"
 )
 
-func TestInitializeDomain(t *testing.T) {
+func TestInitialize(t *testing.T) {
 	type args struct {
-		persistence Persistence
-		caching     Caching
-		repository  Repository
+		transaction    cptx.Transaction
+		userRepo       repository.UserRepository
+		userPersist    persistence.UserPersistence
+		profilePersist persistence.ProfilePersistence
 	}
 	tests := []struct {
 		name string
@@ -19,21 +24,23 @@ func TestInitializeDomain(t *testing.T) {
 		{
 			name: "success",
 			args: args{
-				persistence: nil,
-				caching:     nil,
-				repository:  nil,
+				transaction:    nil,
+				userRepo:       nil,
+				userPersist:    nil,
+				profilePersist: nil,
 			},
 			want: &service{
-				userPersistence: nil,
-				userCaching:     nil,
-				userRepository:  nil,
+				transaction:    nil,
+				userRepo:       nil,
+				userPersist:    nil,
+				profilePersist: nil,
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := InitializeDomain(tt.args.persistence, tt.args.caching, tt.args.repository); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("InitializeDomain() = %v, want %v", got, tt.want)
+			if got := Initialize(tt.args.transaction, tt.args.userRepo, tt.args.userPersist, tt.args.profilePersist); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Initialize() = %v, want %v", got, tt.want)
 			}
 		})
 	}

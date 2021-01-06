@@ -1,67 +1,39 @@
 package user
 
-//go:generate mockgen -destination=../../../mocks/user/user_mock.go -source=initiator.go
+//go:generate mockgen -destination=../../../mocks/user/usecase_mock.go -package=user_mock -source=initiator.go
 
 import (
 	"context"
 
-	"github.com/iDevoid/stygis/internal/constants/model"
-	"github.com/iDevoid/stygis/platform/routers"
-	atreugo "github.com/savsgio/atreugo/v10"
+	"github.com/iDevoid/cptx"
+	"github.com/iDevoid/stygis/internal/constant/model"
+	"github.com/iDevoid/stygis/internal/repository"
+	"github.com/iDevoid/stygis/internal/storage/persistence"
 )
 
-// Persistence initiator includes the functions from storage psql
-type Persistence interface {
-	Create(ctx context.Context, user *model.User) (*model.User, error)
-	FindByID(ctx context.Context, userID int64) (*model.User, error)
-	Find(ctx context.Context, email, password string) (*model.User, error)
-	ChangePassword(ctx context.Context, newPassword string, user *model.User) error
-	Delete(ctx context.Context, user *model.User) error
-}
-
-// Caching initiator contains functions to get data from redis
-type Caching interface {
-	Save(ctx context.Context, user *model.User) error
-	Get(ctx context.Context, userID int64) (*model.User, error)
-	Delete(ctx context.Context, userID int64) error
-}
-
-// Repository is the data logic of the flow of getting or storing data
-type Repository interface {
-	DataProfile(ctx context.Context, userID int64) (*model.User, error)
+// Usecase contains the function of business logic of domain user
+type Usecase interface {
+	Registration(ctx context.Context, user *model.User) error
 }
 
 type service struct {
-	userPersistence Persistence
-	userCaching     Caching
-	userRepository  Repository
+	transaction    cptx.Transaction
+	userRepo       repository.UserRepository
+	userPersist    persistence.UserPersistence
+	profilePersist persistence.ProfilePersistence
 }
 
-// Usecase would be use to contain the business logic functions
-type Usecase interface {
-	Login(ctx context.Context, email, password string) (int64, error)
-	Profile(ctx context.Context, userID int64) (*model.User, error)
-	Register(ctx context.Context, user *model.User) error
-}
-
-// InitializeDomain is the function to initiate the business logic with services that'll be used by business logic
-func InitializeDomain(persistence Persistence, caching Caching, repository Repository) Usecase {
+// Initialize takes all necessary service for domain user to run the business logic of domain user
+func Initialize(
+	transaction cptx.Transaction,
+	userRepo repository.UserRepository,
+	userPersist persistence.UserPersistence,
+	profilePersist persistence.ProfilePersistence,
+) Usecase {
 	return &service{
-		userPersistence: persistence,
-		userCaching:     caching,
-		userRepository:  repository,
+		transaction,
+		userRepo,
+		userPersist,
+		profilePersist,
 	}
-}
-
-// Handler contains all the functions for handling http request
-type Handler interface {
-	Test(ctx *atreugo.RequestCtx) error
-	CreateNewAccount(ctx *atreugo.RequestCtx) error
-	SignIn(ctx *atreugo.RequestCtx) error
-	ShowProfile(ctx *atreugo.RequestCtx) error
-}
-
-// Route contains the functions that will be used for the routing domain user
-type Route interface {
-	Routers() []*routers.Router
 }

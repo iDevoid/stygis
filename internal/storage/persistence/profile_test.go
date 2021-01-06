@@ -13,35 +13,35 @@ import (
 	"github.com/iDevoid/stygis/internal/constant/query"
 )
 
-func TestUserInit(t *testing.T) {
+func TestProfileInit(t *testing.T) {
 	type args struct {
 		db cptx.Database
 	}
 	tests := []struct {
 		name string
 		args args
-		want UserPersistence
+		want ProfilePersistence
 	}{
 		{
 			name: "success",
 			args: args{
 				db: nil,
 			},
-			want: &userPersistence{
+			want: &profilePersistence{
 				db: nil,
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := UserInit(tt.args.db); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("UserInit() = %v, want %v", got, tt.want)
+			if got := ProfileInit(tt.args.db); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ProfileInit() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func Test_userPersistence_InsertUser(t *testing.T) {
+func Test_profilePersistence_InsertProfile(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	type fields struct {
 		db cptx.Database
@@ -61,17 +61,15 @@ func Test_userPersistence_InsertUser(t *testing.T) {
 			fields: fields{
 				db: func() cptx.Database {
 					_mockedMain := cptx.NewMockMainDB(ctrl)
-					_mockedMain.EXPECT().QueryRowMustTx(gomock.Any(), query.UserInsert,
+					_mockedMain.EXPECT().ExecuteMustTx(gomock.Any(), query.ProfileInsert,
 						map[string]interface{}{
-							"username":     "clyf",
-							"email":        "clyf@example.com",
-							"hashed_email": "ajsdhkjasdns",
-							"password":     "password",
-							"create_time":  time.Date(2020, 12, 21, 12, 12, 12, 0, time.UTC),
-							"status":       0,
+							"id":          int64(1),
+							"username":    "clyf",
+							"full_name":   "clyf",
+							"status":      0,
+							"create_time": time.Date(2020, 12, 21, 12, 12, 12, 0, time.UTC),
 						},
-						gomock.Any(),
-					).Return(errors.New("ERROR"))
+					).Return(nil, errors.New("ERROR"))
 					mocked := cptx.NewMockDatabase(ctrl)
 					mocked.EXPECT().Main().Return(_mockedMain)
 					return mocked
@@ -80,11 +78,9 @@ func Test_userPersistence_InsertUser(t *testing.T) {
 			args: args{
 				ctx: context.TODO(),
 				user: &model.User{
-					Username:    "clyf",
-					Email:       "clyf@example.com",
-					HashedEmail: "ajsdhkjasdns",
-					Password:    "password",
-					CreateTime:  time.Date(2020, 12, 21, 12, 12, 12, 0, time.UTC),
+					ID:         1,
+					Username:   "clyf",
+					CreateTime: time.Date(2020, 12, 21, 12, 12, 12, 0, time.UTC),
 				},
 			},
 			wantErr: true,
@@ -93,17 +89,15 @@ func Test_userPersistence_InsertUser(t *testing.T) {
 			fields: fields{
 				db: func() cptx.Database {
 					_mockedMain := cptx.NewMockMainDB(ctrl)
-					_mockedMain.EXPECT().QueryRowMustTx(gomock.Any(), query.UserInsert,
+					_mockedMain.EXPECT().ExecuteMustTx(gomock.Any(), query.ProfileInsert,
 						map[string]interface{}{
-							"username":     "clyf",
-							"email":        "clyf@example.com",
-							"hashed_email": "ajsdhkjasdns",
-							"password":     "password",
-							"create_time":  time.Date(2020, 12, 21, 12, 12, 12, 0, time.UTC),
-							"status":       0,
+							"id":          int64(1),
+							"username":    "clyf",
+							"full_name":   "clyf",
+							"status":      0,
+							"create_time": time.Date(2020, 12, 21, 12, 12, 12, 0, time.UTC),
 						},
-						gomock.Any(),
-					).Return(nil)
+					).Return(nil, nil)
 					mocked := cptx.NewMockDatabase(ctrl)
 					mocked.EXPECT().Main().Return(_mockedMain)
 					return mocked
@@ -112,22 +106,20 @@ func Test_userPersistence_InsertUser(t *testing.T) {
 			args: args{
 				ctx: context.TODO(),
 				user: &model.User{
-					Username:    "clyf",
-					Email:       "clyf@example.com",
-					HashedEmail: "ajsdhkjasdns",
-					Password:    "password",
-					CreateTime:  time.Date(2020, 12, 21, 12, 12, 12, 0, time.UTC),
+					ID:         1,
+					Username:   "clyf",
+					CreateTime: time.Date(2020, 12, 21, 12, 12, 12, 0, time.UTC),
 				},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			up := &userPersistence{
+			pp := &profilePersistence{
 				db: tt.fields.db,
 			}
-			if err := up.InsertUser(tt.args.ctx, tt.args.user); (err != nil) != tt.wantErr {
-				t.Errorf("userPersistence.InsertUser() error = %v, wantErr %v", err, tt.wantErr)
+			if err := pp.InsertProfile(tt.args.ctx, tt.args.user); (err != nil) != tt.wantErr {
+				t.Errorf("profilePersistence.InsertProfile() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

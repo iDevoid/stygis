@@ -1,35 +1,45 @@
 package repository
 
-import (
-	"context"
+//go:generate mockgen -destination=../../mocks/user/repository_mock.go -package=user_mock -source=user.go
 
-	"github.com/iDevoid/stygis/internal/constants/model"
-	"github.com/iDevoid/stygis/internal/module/user"
+import (
+	"crypto/sha512"
+	"fmt"
+
+	"github.com/iDevoid/stygis/internal/constant/model"
+	"github.com/iDevoid/stygis/platform/encryption"
 )
 
-type userRepo struct {
-	cache       user.Caching
-	persistence user.Persistence
+// UserRepository contains the functions of data logic for domain user
+type UserRepository interface {
+	Encrypt(user *model.User) (err error)
 }
 
-// UserInit to initiate the repository of user domain
-func UserInit(cache user.Caching, persistence user.Persistence) user.Repository {
-	return &userRepo{
-		cache:       cache,
-		persistence: persistence,
+type userRepository struct {
+	systemEncryptKey string
+}
+
+// UserInit initializes the data logic / repository for domain user
+func UserInit(systemEncryptKey string) UserRepository {
+	return &userRepository{
+		systemEncryptKey,
 	}
 }
 
-// DataProfile gets the data user from cache, if it doesn't exist then it selects the data from persistence db and save it to cache
-func (ur *userRepo) DataProfile(ctx context.Context, userID int64) (*model.User, error) {
-	user, err := ur.cache.Get(ctx, userID)
-	if err == nil {
-		return user, nil
+func (ur *userRepository) Encrypt(user *model.User) (err error) {
+	if user.Email != "" {
+		user.Email, err = encryption.Encrypting(user.Email, ur.systemEncryptKey)
+		if err != nil {
+			return
+		}
+		hash512 := sha512.Sum512([]byte(user.Email))
+		user.Email = fmt.Sprintf("%x", hash512)
 	}
-	user, err = ur.persistence.FindByID(ctx, userID)
-	if err != nil {
-		return nil, err
+
+	if user.Password != "" {
+		hash512 := sha512.Sum512([]byte(user.Password))
+		user.Password = fmt.Sprintf("%x", hash512)
 	}
-	err = ur.cache.Save(ctx, user)
-	return user, err
+
+	return
 }

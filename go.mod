@@ -1,21 +1,17 @@
 module github.com/iDevoid/stygis
 
-go 1.13
+go 1.15
 
 require (
-	github.com/DATA-DOG/go-sqlmock v1.4.0
-	github.com/alicebob/miniredis v2.5.0+incompatible
-	github.com/alicebob/miniredis/v2 v2.11.1 // indirect
-	github.com/apex/log v1.1.1
-	github.com/go-redis/redis v6.15.6+incompatible
-	github.com/golang/mock v1.3.1
-	github.com/jmoiron/sqlx v1.2.0
+	github.com/andybalholm/brotli v1.0.1 // indirect
+	github.com/gofiber/fiber/v2 v2.3.2
+	github.com/golang/mock v1.4.4
+	github.com/iDevoid/cptx v0.0.0-20210106134833-4c66b596980c
+	github.com/jmoiron/sqlx v1.2.0 // indirect
+	github.com/klauspost/compress v1.11.4 // indirect
 	github.com/lib/pq v1.0.0
-	github.com/onsi/ginkgo v1.11.0 // indirect
-	github.com/onsi/gomega v1.8.1 // indirect
-	github.com/savsgio/atreugo/v10 v10.0.0
-	github.com/sirupsen/logrus v1.4.2
-	github.com/valyala/fasthttp v1.6.0
-	github.com/yuin/gopher-lua v0.0.0-20191220021717-ab39c6098bdb // indirect
-	google.golang.org/appengine v1.6.5 // indirect
+	github.com/sirupsen/logrus v1.7.0
+	github.com/stretchr/testify v1.3.0 // indirect
+	golang.org/x/sys v0.0.0-20201231184435-2d18734c6014 // indirect
+	google.golang.org/appengine v1.6.7 // indirect
 )

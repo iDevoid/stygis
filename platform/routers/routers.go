@@ -4,20 +4,22 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/savsgio/atreugo/v10"
+	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
 )
 
 // Router data will be registered to http listener
 type Router struct {
 	Method  string
-	URL     string
-	Handler atreugo.View
+	Path    string
+	Handler fiber.Handler
 }
 
 type routing struct {
-	host   string
-	domain string
+	host           string
+	domain         string
+	allowedOrigins string
+	routers        []Router
 }
 
 type handlerInfo struct {
@@ -31,59 +33,35 @@ type Routers interface {
 	Serve()
 }
 
-var handlers []*Router
-
 // Initialize is for initialize the handler
-func Initialize(host string, routers []*Router, domain string) Routers {
-	handlers = routers
+func Initialize(host, allowedOrigins string, routers []Router, domain string) Routers {
 	return &routing{
-		host:   host,
-		domain: domain,
+		host,
+		domain,
+		allowedOrigins,
+		routers,
 	}
 }
 
 // Serve is to start serving the HTTP Listener for every domain
-func (us *routing) Serve() {
-	config := &atreugo.Config{
-		Addr: us.host,
-	}
-	server := atreugo.New(config)
+func (r *routing) Serve() {
+	server := fiber.New()
 
-	server.UseBefore(func(ctx *atreugo.RequestCtx) error {
-		ctx.SetUserValue("info", handlerInfo{
-			method: string(ctx.Method()),
-			path:   string(ctx.Path()),
-			time:   time.Now(),
-		})
-		return ctx.Next()
-	})
+	group := server.Group(fmt.Sprintf("/%s", r.domain))
 
-	server.UseAfter(func(ctx *atreugo.RequestCtx) error {
-		info := ctx.UserValue("info").(handlerInfo)
-		timeHandler := time.Since(info.time)
-
-		// you can put datadog, prometheus or any monitoring platform
-		logrus.WithFields(logrus.Fields{
-			"path":   info.path,
-			"method": info.method,
-		}).Infoln(fmt.Sprintf("execution time: %v millisecond; %v microsecond", timeHandler.Milliseconds(), timeHandler.Microseconds()))
-
-		return ctx.Next()
-	})
-
-	for _, router := range handlers {
-		server.Path(router.Method, router.URL, router.Handler)
+	for _, router := range r.routers {
+		group.Add(router.Method, router.Path, router.Handler)
 	}
 
 	logrus.WithFields(logrus.Fields{
-		"host":   us.host,
-		"domain": us.domain,
+		"host":   r.host,
+		"domain": r.domain,
 	}).Info("Starts Serving on HTTP")
-	err := server.ListenAndServe()
+	err := server.Listen(r.host)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
-			"host":   us.host,
-			"domain": us.domain,
+			"host":   r.host,
+			"domain": r.domain,
 		}).Fatal(err)
 		panic(err)
 	}

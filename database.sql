@@ -1,14 +1,34 @@
-DROP TABLE IF EXISTS account;
-create table account (
+DROP TABLE IF exists users;
+create table users (
     id BIGSERIAL PRIMARY KEY,
-    email varchar (255) not null,
-    hash_password varchar (64) not null,
-    username varchar (50) not null,
-    created_at timestamp not null,
-    last_login timestamp null,
-    status smallint not null
+    username varchar(50) not null,
+    email varchar(255) not null,
+    hashed_email VARCHAR(128) not NULL,
+    "password" varchar(128) not null,
+    create_time timestamp not null DEFAULT CURRENT_TIMESTAMP,
+    status smallint not null DEFAULT 0,
+    update_time TIMESTAMP
 );
-ALTER TABLE account ADD CONSTRAINT account_username UNIQUE (username);
-ALTER TABLE account ADD CONSTRAINT account_email UNIQUE (email);
-CREATE INDEX account_username_idx ON account (username,hash_password);
-CREATE INDEX account_email_idx ON account (email,hash_password);
+ALTER TABLE users ADD CONSTRAINT user_username UNIQUE (username);
+ALTER TABLE users ADD CONSTRAINT user_email UNIQUE (hashed_email);
+CREATE INDEX user_username_idx ON users (username, hashed_email,"password");
+
+DROP TABLE IF exists "profiles";
+create table "profiles" (
+    id BIGINT PRIMARY KEY,
+    username varchar(50) not null,
+    full_name VARCHAR(255) not null DEFAULT '',
+    profile_picture text not null DEFAULT '',
+    cover_picture text not null DEFAULT '',
+    bio text not null DEFAULT '',
+    "card" text not null DEFAULT '',
+    followers INTEGER not null DEFAULT 0,
+    following INTEGER not null DEFAULT 0,
+    register_time TIMESTAMP NULL,
+    status smallint not null DEFAULT 0,
+    create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP NULl
+);
+ALTER TABLE "profiles" ADD CONSTRAINT profile_id UNIQUE (id);
+ALTER TABLE "profiles" ADD CONSTRAINT profile_username UNIQUE (username);
+CREATE INDEX profile_username_idx ON "profiles" (username);

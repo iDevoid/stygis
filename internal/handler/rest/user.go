@@ -1,104 +1,60 @@
 package rest
 
 import (
+	"encoding/json"
 	"errors"
-	"fmt"
-	"hash"
 	"net/http"
-	"strconv"
 
-	"github.com/iDevoid/stygis/internal/constants/model"
-	"github.com/iDevoid/stygis/internal/constants/state"
+	"github.com/gofiber/fiber/v2"
+	"github.com/iDevoid/stygis/internal/constant/model"
 	"github.com/iDevoid/stygis/internal/module/user"
-	"github.com/savsgio/atreugo/v10"
-	"github.com/valyala/fasthttp"
+	"github.com/sirupsen/logrus"
 )
 
-type userService struct {
-	usecase user.Usecase
-	hash    hash.Hash
+// UserHandler contains the function of handler for domain user
+type UserHandler interface {
+	Test(c *fiber.Ctx) error
+	RegistrationHandler(ctx *fiber.Ctx) error
 }
 
-// HandleUser is to initialize the rest handler for domain user
-func HandleUser(usecase user.Usecase, hash hash.Hash) user.Handler {
-	return &userService{
-		usecase: usecase,
-		hash:    hash,
+type userHandler struct {
+	userCase user.Usecase
+}
+
+// UserInit is to initialize the rest handler for domain user
+func UserInit(userCase user.Usecase) UserHandler {
+	return &userHandler{
+		userCase,
 	}
 }
 
-// Test is the test handler function
-func (us *userService) Test(ctx *atreugo.RequestCtx) error {
-	return ctx.TextResponse("Hello World!")
+// Test is handler testing
+func (uh *userHandler) Test(ctx *fiber.Ctx) error {
+	return ctx.SendString("Hello, World!")
 }
 
-// CreateNewAccount handles user registration
-func (us *userService) CreateNewAccount(ctx *atreugo.RequestCtx) error {
-	username := string(ctx.FormValue(state.HandlerKeyUsername))
-	email := string(ctx.FormValue(state.HandlerKeyEmail))
-	password := string(ctx.FormValue(state.HandlerKeyPassword))
-
-	if username == "" || email == "" || password == "" {
-		ctx.SetStatusCode(http.StatusBadRequest)
+func (uh *userHandler) RegistrationHandler(ctx *fiber.Ctx) error {
+	var body model.User
+	err := json.Unmarshal(ctx.Body(), &body)
+	if err != nil || body.Username == "" || body.Email == "" || body.Password == "" {
+		ctx.Status(http.StatusBadRequest)
 		return errors.New(http.StatusText(http.StatusBadRequest))
 	}
 
-	us.hash.Write([]byte(password))
-	password = fmt.Sprintf("%x", us.hash.Sum(nil))
+	ctx.Response().SetBodyString("Registration Success!")
 
-	err := us.usecase.Register(ctx.RequestCtx, &model.User{
-		Username: username,
-		Email:    email,
-		Password: password,
-	})
+	err = uh.userCase.Registration(ctx.Context(), &body)
 	if err != nil {
-		ctx.SetStatusCode(http.StatusInternalServerError)
-	}
-	return err
-}
+		logrus.WithFields(logrus.Fields{
+			"domain":  "user",
+			"action":  "create new user",
+			"usecase": "Register",
+			"email":   body.Email,
+		}).Errorln(err)
 
-// SignIn handles API for loggin in the user
-func (us *userService) SignIn(ctx *atreugo.RequestCtx) error {
-	email := string(ctx.FormValue(state.HandlerKeyEmail))
-	password := string(ctx.FormValue(state.HandlerKeyPassword))
-
-	if email == "" || password == "" {
-		ctx.SetStatusCode(http.StatusBadRequest)
-		return errors.New(http.StatusText(http.StatusBadRequest))
+		ctx.Status(http.StatusInternalServerError)
+		ctx.Response().SetBodyString(err.Error())
 	}
 
-	us.hash.Write([]byte(password))
-	password = fmt.Sprintf("%x", us.hash.Sum(nil))
-
-	userID, err := us.usecase.Login(ctx, email, password)
-	if err != nil {
-		ctx.SetStatusCode(http.StatusInternalServerError)
-		return err
-	}
-	authCookie := fasthttp.Cookie{}
-	authCookie.SetKey(state.HandlerUserKeyCookie)
-	authCookie.SetSecure(true)
-	authCookie.SetValue(strconv.FormatInt(userID, 10))
-	authCookie.SetMaxAge(60 * 60 * 24)
-	authCookie.SetPath("/")
-	ctx.Response.Header.SetCookie(&authCookie)
 	return nil
-}
-
-// ShowProfile handlers the request to show the user profile
-func (us *userService) ShowProfile(ctx *atreugo.RequestCtx) error {
-	stringUserID := string(ctx.Request.Header.Cookie(state.HandlerUserKeyCookie))
-	userID, err := strconv.ParseInt(stringUserID, 10, 64)
-	if err != nil || userID < 1 {
-		ctx.SetStatusCode(http.StatusBadRequest)
-		return errors.New(http.StatusText(http.StatusBadRequest))
-	}
-
-	user, err := us.usecase.Profile(ctx, userID)
-	if err != nil {
-		ctx.SetStatusCode(http.StatusInternalServerError)
-		return err
-	}
-
-	return ctx.JSONResponse(user)
 }
